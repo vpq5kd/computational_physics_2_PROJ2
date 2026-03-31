@@ -99,10 +99,11 @@ class ANNNIsampler:
             plt.show()
         else: 
             print(f"{self.states} must have data to be displayed!")
+'''
 def main():
     AS = ANNNIsampler(1,1/2,50,0)
     filename = "ANNNI_ising_configurations.npy"
     AS.load_data(filename)
     AS.display_correlation()
 main()
-
+'''
