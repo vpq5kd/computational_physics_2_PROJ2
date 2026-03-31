@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 
 
 class RBM:
+
+    epsilon_w_arr = np.array([])
+
     def __init__(self, N, M):
         self.N = N
         self.M = M
@@ -105,26 +108,49 @@ class RBM:
         return epsilon_w
 
     def train_model(self, eta, k, data_set, n_epochs):
+        epsilon_w_arr = []
         for epoch in range(n_epochs):
             w_before = self.W.copy()
             self.update_w(eta,k,data_set)
             epsilon_w = self.calculate_epsilon_W(w_before)
-            print(epsilon_w)
-                       
+            epsilon_w_arr.append(epsilon_w)
+            print(f"Epoch: {epoch} | epsilon_w: {epsilon_w}")
+        
+        self.epsilon_w_arr = np.array(epsilon_w_arr)
+        return self.epsilon_w_arr
+
+    def save_model(self, filename):
+        np.savez(filename, W=self.W, epsilon_w_arr=self.epsilon_w_arr)
+    
+    def load_model(self, filename):
+        data = np.load(filename)
+        self.W = data["W"]
+        self.epsilon_w_arr = data["epsilon_w_arr"]
+
     def generate_rbm_states(self, num_states=1000, melting_iterations=1000):
         states = []
         sigma = self.rng.choice([-1,-1], size=self.N)
 
-        for _ in range(melt):
+        for _ in range(melting_iterations):
             tau = self.sample_hidden(sigma)
             sigma = self.sample_visible(tau)
 
         for _ in range(num_states):
             tau = self.sample_hidden(sigma)
             sigma = self.sample_visible(tau)
-            states.append(simga.copy())
+            states.append(sigma.copy())
 
         return np.array(states)
+
+    def display_epsilon_w(self):
+        
+        epoch_array = np.arrange(len(self.epsilon_w_arr)
+        
+        plt.figure()
+        plt.plot(epoch_array, self.epsilon_w_arr, color='saddlebrown',marker='o')
+        plt.xlabel('Epoch Number')
+        plt.ylabel(r'$\epsilon_W = \frac{1}{NM} \sum_{i, j} |\Delta W_{ij}|$')
+        plt.show()
 
 
 

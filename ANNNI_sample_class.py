@@ -80,11 +80,10 @@ class ANNNIsampler:
         except OSError:
             print(f"{filename} is empty or corrupted, please try again.")
     
-   def calculate_correlation(self, states): 
+    def calculate_correlation(self, states):
         max_x = 35
         corr_arr = np.zeros(max_x)
         for state in states:
-            print(state)
             for x in range(max_x):
                 corr = 0
                 for i in range(self.N):
@@ -102,16 +101,16 @@ class ANNNIsampler:
             x_arr = np.arange(max_x)
 
             plt.plot(x_arr, annni_states_corr_arr, color='magenta', marker='o', label='ANNNI')
-        else if self.states.size == 0: 
+        elif self.states.size == 0: 
             print(f"{self.states} must have data to be displayed!")
 
         if self.states_RBM.size >0:
             rbm_states_corr_arr, max_x = self.calculate_correlation(self.states_RBM)
             x_arr = np.arange(max_x)
             
-            plt.plot(x_arr, rbm_states_corr_arr, color='magenta', marker='o', label='ANNNI')
+            plt.plot(x_arr, rbm_states_corr_arr, color='forestgreen', marker='o', label='RBM')
 
-        else if self.states_RBM.size == 0: 
+        elif self.states_RBM.size == 0: 
             print(f"{self.states_RBM} must have data to be displayed!")
         
         
