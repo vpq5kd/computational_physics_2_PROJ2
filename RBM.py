@@ -63,7 +63,58 @@ class RBM:
 
         return sigma
 
+    def data_average_dw(self, data_set):
+        de_dw_array = np.zeros((self.N, self.M))
+        for sigma in data_set:
+            tau = self.sample_hidden(sigma)
+            for i in range(self.N):
+                for j in range(self.M):
+                    de_dw_array[i,j] += sigma[i]*tau[j]
+        
+        de_dw_array /= len(data_set)
+        
+        return de_dw_array
 
+    def model_average_dw(self, data_set, k):
+        
+        de_dw_array = np.zeros((self.N, self.M))
+        for sigma0 in data_set:
+            sigma = sigma0.copy()
+            tau = self.sample_hidden(sigma)
+
+            for _ in range(k):
+                sigma = self.sample_visible(tau)
+                tau = self.sample_hidden(sigma)
+
+            for i in range(self.N):
+                for j in range(self.M):
+                    de_dw_array[i,j] += sigma[i]*tau[j]
+
+        de_dw_array /= len(data_set)
+        
+        return de_dw_array
+
+    def update_w(self, eta, k, data_set): 
+        self.W += eta * (self.data_average_dw(data_set)-self.model_average_dw(data_set,k))
+    def calculate_epsilon_W(self, w_before):
+        epsilon_w = 0
+        for i in range(self.N):
+            for j in range(self.M):
+                epsilon_w += np.abs(self.W-w_before)
+        return epsilon_w
+
+    def train_model(self, eta, k, data_set, n_epochs):
+        for epoch in n_epochs:
+            w_before = self.W
+            self.update_w(eta,k,data_set)
+            epsilon_w = self.calculate_espilon_W(w_before)
+            print(epsilon_w)
+                       
+
+
+
+        
+                      
             
     
 
