@@ -142,16 +142,28 @@ class RBM:
 
         return np.array(states)
 
-    def display_epsilon_w(self):
+    def display_epsilon_w(self,filename):
         
-        epoch_array = np.arrange(len(self.epsilon_w_arr)
+        epoch_array = np.arange(len(self.epsilon_w_arr))
         
         plt.figure()
-        plt.plot(epoch_array, self.epsilon_w_arr, color='saddlebrown',marker='o')
+        plt.plot(epoch_array, self.epsilon_w_arr, color='saddlebrown',marker='+', linestyle='None')
+        plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
         plt.xlabel('Epoch Number')
         plt.ylabel(r'$\epsilon_W = \frac{1}{NM} \sum_{i, j} |\Delta W_{ij}|$')
+        plt.savefig(filename)
         plt.show()
+    
+    def display_inter_layer_couplings(self,filename):
+        
+        weights = self.W.flatten()
 
+        plt.figure()
+        plt.hist(weights, bins=30, color ='palevioletred',histtype='stepfilled')
+        plt.xlabel(r"$W_{ij}$")
+        plt.ylabel("Count")
+        plt.savefig(filename)
+        plt.show()
 
 
         

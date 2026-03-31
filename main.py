@@ -7,15 +7,17 @@ sampler.load_data("ANNNI_ising_configurations.npy")
 data_set = sampler.states
 
 network = RBM(50,20)
-network.train_model(0.01, 1, data_set, 300)
+#network.train_model(0.01, 1, data_set, 500)
 
-filename = "RBM_weights.npy"
-network.save_model(filename)
+filename = "RBM.npz"
+#network.save_model(filename)
 
-#network.load_model(filename)
+network.load_model(filename)
+network.display_epsilon_w("epsilon_w.png")
+network.display_inter_layer_couplings("inter_layer_couplings.png")
 
 states_RBM = network.generate_rbm_states()
 sampler.set_states_RBM(states_RBM)
-sampler.display_correlation()
+sampler.display_correlation("correlation.png")
 
 

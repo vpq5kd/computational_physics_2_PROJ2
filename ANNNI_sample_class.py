@@ -93,7 +93,7 @@ class ANNNIsampler:
         corr_arr /= len(states)
         return corr_arr, max_x
 
-    def display_correlation(self):
+    def display_correlation(self, filename):
         plt.figure()
         if self.states.size > 0: 
             annni_states_corr_arr, max_x = self.calculate_correlation(self.states)
@@ -117,6 +117,7 @@ class ANNNIsampler:
         plt.xlabel(r"$x$")
         plt.ylabel(r"$C(x) = \langle \sigma_i \sigma_{i+x} \rangle$")
         plt.legend()
+        plt.savefig(filename)
         plt.show()
 '''
 def main():
