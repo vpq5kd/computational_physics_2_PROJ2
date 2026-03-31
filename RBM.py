@@ -8,7 +8,7 @@ class RBM:
         self.M = M
         self.rng = np.random.default_rng()
         
-        self.W = 0.01 * self.rng.standard_normal(N,M)
+        self.W = 0.01 * self.rng.standard_normal((N,M))
         self.theta_v = np.zeros(N)
         self.theta_h = np.zeros(M)
 
@@ -54,7 +54,7 @@ class RBM:
                 h_i += self.W[i,j] * tau[j]
             h_i -= self.theta_v[i]
 
-            prob = 1/0/(1.0 *np.exp(-2*h_i))
+            prob = 1.0/(1.0 *np.exp(-2*h_i))
 
             if self.rng.random() < prob:
                 sigma[i] = 1
@@ -95,19 +95,20 @@ class RBM:
         return de_dw_array
 
     def update_w(self, eta, k, data_set): 
-        self.W += eta * (self.data_average_dw(data_set)-self.model_average_dw(data_set,k))
+        self.W = self.W +  eta * (self.data_average_dw(data_set)-self.model_average_dw(data_set,k))
     def calculate_epsilon_W(self, w_before):
         epsilon_w = 0
         for i in range(self.N):
             for j in range(self.M):
-                epsilon_w += np.abs(self.W-w_before)
+                epsilon_w += np.abs(self.W[i,j]-w_before[i,j])
+        epsilon_w /= (self.N * self.M)
         return epsilon_w
 
     def train_model(self, eta, k, data_set, n_epochs):
-        for epoch in n_epochs:
-            w_before = self.W
+        for epoch in range(n_epochs):
+            w_before = self.W.copy()
             self.update_w(eta,k,data_set)
-            epsilon_w = self.calculate_espilon_W(w_before)
+            epsilon_w = self.calculate_epsilon_W(w_before)
             print(epsilon_w)
                        
 
