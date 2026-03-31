@@ -14,6 +14,7 @@ class ANNNIsampler:
     rng = np.random.default_rng()
     
     states = np.array([])
+    states_RBM = np.array([])
 
     def __init__(self, j1, j2, N, T):
         self.j1 = j1
@@ -21,6 +22,9 @@ class ANNNIsampler:
         self.N = N
         self.T = T
     
+    def set_states_RBM(self, states_RBM):
+        self.states_RBM = states_RBM
+
     def delta_energy_flip(self, state, i):
         n = len(state)
         s = state[i]
@@ -75,30 +79,46 @@ class ANNNIsampler:
             self.states = np.load(filename)
         except OSError:
             print(f"{filename} is empty or corrupted, please try again.")
+    
+   def calculate_correlation(self, states): 
+        max_x = 35
+        corr_arr = np.zeros(max_x)
+        for state in states:
+            print(state)
+            for x in range(max_x):
+                corr = 0
+                for i in range(self.N):
+                    j = (i+x) % self.N
+                    corr += state[i] * state[j]
+                corr_arr[x] += corr / self.N
+        corr_arr /= len(states)
+        return corr_arr, max_x
+
     def display_correlation(self):
+        plt.figure()
         if self.states.size > 0: 
-            max_x = 35
-            corr_arr = np.zeros(max_x)
-            for state in self.states:
-                print(state)
-                for x in range(max_x):
-                    corr = 0
-                    for i in range(self.N):
-                        j = (i+x) % self.N
-                        corr += state[i] * state[j]
-                    corr_arr[x] += corr / self.N
-
-            corr_arr /= len(self.states)
-
+            annni_states_corr_arr, max_x = self.calculate_correlation(self.states)
+            
             x_arr = np.arange(max_x)
 
-            plt.figure()
-            plt.plot(x_arr, corr_arr, color='magenta', marker='o')
-            plt.xlabel(r"$x$")
-            plt.ylabel(r"$C(x) = \langle \sigma_i \sigma_{i+x} \rangle$")
-            plt.show()
-        else: 
+            plt.plot(x_arr, annni_states_corr_arr, color='magenta', marker='o', label='ANNNI')
+        else if self.states.size == 0: 
             print(f"{self.states} must have data to be displayed!")
+
+        if self.states_RBM.size >0:
+            rbm_states_corr_arr, max_x = self.calculate_correlation(self.states_RBM)
+            x_arr = np.arange(max_x)
+            
+            plt.plot(x_arr, rbm_states_corr_arr, color='magenta', marker='o', label='ANNNI')
+
+        else if self.states_RBM.size == 0: 
+            print(f"{self.states_RBM} must have data to be displayed!")
+        
+        
+        plt.xlabel(r"$x$")
+        plt.ylabel(r"$C(x) = \langle \sigma_i \sigma_{i+x} \rangle$")
+        plt.legend()
+        plt.show()
 '''
 def main():
     AS = ANNNIsampler(1,1/2,50,0)

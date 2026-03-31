@@ -54,7 +54,7 @@ class RBM:
                 h_i += self.W[i,j] * tau[j]
             h_i -= self.theta_v[i]
 
-            prob = 1.0/(1.0 *np.exp(-2*h_i))
+            prob = 1.0/(1.0 + np.exp(-2*h_i))
 
             if self.rng.random() < prob:
                 sigma[i] = 1
@@ -111,6 +111,20 @@ class RBM:
             epsilon_w = self.calculate_epsilon_W(w_before)
             print(epsilon_w)
                        
+    def generate_rbm_states(self, num_states=1000, melting_iterations=1000):
+        states = []
+        sigma = self.rng.choice([-1,-1], size=self.N)
+
+        for _ in range(melt):
+            tau = self.sample_hidden(sigma)
+            sigma = self.sample_visible(tau)
+
+        for _ in range(num_states):
+            tau = self.sample_hidden(sigma)
+            sigma = self.sample_visible(tau)
+            states.append(simga.copy())
+
+        return np.array(states)
 
 
 
